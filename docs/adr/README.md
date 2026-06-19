@@ -24,3 +24,4 @@ Full rationale, alternatives, and the responsibility split live in `docs/archite
 | [typed-tool-result-error-contract](typed-tool-result-error-contract.md) | Accepted | Discriminated-union result + closed error codes |
 | [additive-contract-versioning](additive-contract-versioning.md) | Accepted | Additive evolution; `schemaVersion`; provider lifecycle; catalog stability policy |
 | [credential-forwarding-and-token-model](credential-forwarding-and-token-model.md) | Accepted (scope-bounded) | Token model; ephemeral references before financial providers |
+| [typescript-strictness-config](typescript-strictness-config.md) | Accepted | Full strict minus exactOptionalPropertyTypes (MCP SDK type incompatibility); revisit trigger |

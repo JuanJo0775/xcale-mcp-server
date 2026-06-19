@@ -10,10 +10,9 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
-    // NOTE: exactOptionalPropertyTypes is intentionally OFF — the @modelcontextprotocol/sdk
-    // type declarations (Transport interface, transport options) are not written for it, and
-    // working around it would mean `as any` casts at every server/client connect(). The rest of
-    // strict mode stays on.
+    // exactOptionalPropertyTypes is intentionally OFF — incompatible with @modelcontextprotocol/sdk's
+    // published Transport types. Tracked decision + revisit trigger:
+    // docs/adr/typescript-strictness-config.md
 
     "esModuleInterop": true,
     "resolveJsonModule": true,
