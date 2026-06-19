@@ -10,7 +10,10 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
-    "exactOptionalPropertyTypes": true,
+    // NOTE: exactOptionalPropertyTypes is intentionally OFF — the @modelcontextprotocol/sdk
+    // type declarations (Transport interface, transport options) are not written for it, and
+    // working around it would mean `as any` casts at every server/client connect(). The rest of
+    // strict mode stays on.
 
     "esModuleInterop": true,
     "resolveJsonModule": true,
