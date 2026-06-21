@@ -129,3 +129,35 @@ only on demonstrated need (*complexity on demand*). See `docs/architecture-revie
 discovery, distributed plugin runtimes) is added until a demonstrable need exists; introducing any
 requires an ADR. Keeps the platform maintainable as providers grow. _Avoid_: building for a "might
 need it someday" scenario.
+
+---
+
+### Canonical provider patterns (from the Cloudbeds grill, 2026-06-21 — see `docs/adr/canonical-provider-pattern.md`)
+
+**`defineTool`** — the helper every tool is declared with: `{ name, description, input (zod), handler }`.
+The `input` is the **single source of truth** — it validates args AND generates the `tools/list`
+JSON Schema. The provider's `callTool` dispatcher validates before calling, so handlers get **typed,
+pre-validated** args. _Avoid_: a hand-written `inputSchema`, or `parse()` inside handler business logic.
+
+**Single Source of Truth (tool contract)** — each tool has one canonical schema; all derived forms
+(JSON Schema, types, docs) are generated from it. CI-enforced (no literal `inputSchema` in providers).
+
+**`PaginatedResult<T>`** — the uniform list envelope: `{ items, page, pageSize, totalPages?,
+totalResults?, hasMore? }`. List tools take `page`/`pageSize` (defaults + max). _Avoid_:
+auto-pagination and internal 429 retry loops (return `PROVIDER_RATE_LIMITED`; consumer decides).
+
+**Explicit Context** — when an operation can target multiple logical contexts (property, org,
+workspace…), the target is explicit + validated via the provider's own `metadataSchema` (zod),
+never inferred. The core knows no field names (no `propertyID` in the framework).
+
+**Fidelity over Unification** — `data` preserves the provider's original semantics; only the
+envelope is standardized. Curation (documented field projection) yes; cross-provider canonical
+entities (`Reservation`, `Guest`) no (would be domain logic). Override only via ADR.
+
+**Share policies, not assumptions** — the core centralizes universal invariants (security, typing,
+contracts, `mapHttpStatusToErrorCode`, token-at-egress); provider-specific behavior stays per-provider.
+No shared HTTP framework until ≥2 providers prove it (ADR required). _Avoid_: centralizing a guess.
+
+**`createXProvider(deps?)`** — provider factory with the HTTP transport (and future clock/ids/retry/
+logger) injectable; default instance registered in `src/providers/index.ts`. Enables deterministic
+unit tests against recorded `__fixtures__/` + the mandatory `runProviderConformance` suite.
