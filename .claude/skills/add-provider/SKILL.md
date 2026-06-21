@@ -76,13 +76,14 @@ export const {slug}Provider: IProvider = {
 
 ### 4. Register the provider (one line)
 
-Add it to the explicit registry — no auto-discovery:
+Add it to the explicit provider list — no auto-discovery. This lives in `src/providers/index.ts`
+(NOT `src/core/**`), so registration honors the golden rule (provider PRs touch only
+`src/providers/**`). The core's `createRegistry()` consumes this list by dependency inversion.
 
 ```typescript
-// src/core/registry.ts
-export const PROVIDERS: IProvider[] = [
-  nevatalProvider,
-  epaycoProvider,
+// src/providers/index.ts
+export const PROVIDERS: readonly IProvider[] = [
+  echoProvider,
   {slug}Provider,   // ← this line
 ];
 ```

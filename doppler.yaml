@@ -1,0 +1,5 @@
+# Doppler project pointer (no secrets — safe to commit).
+# Local dev pulls secrets from the `dev` config of the `xcale-mcp-server` project via `doppler run`.
+setup:
+  project: xcale-mcp-server
+  config: dev
