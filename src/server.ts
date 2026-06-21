@@ -34,13 +34,30 @@ export function buildApp(config: Config = loadConfig()): FastifyInstance {
     reply.hijack();
     const rawToken = request.headers['x-provider-token'];
     const token = extractProviderToken(typeof rawToken === 'string' ? rawToken : undefined);
-    await handleMcpRequest({
-      registry,
-      ctx: { token },
-      req: request.raw,
-      res: reply.raw,
-      body: request.body,
-    });
+    try {
+      await handleMcpRequest({
+        registry,
+        ctx: { token },
+        req: request.raw,
+        res: reply.raw,
+        body: request.body,
+      });
+    } catch (err) {
+      // After hijack(), Fastify will not respond — never leave the request hanging.
+      request.log.error({ err }, 'MCP request handling failed');
+      if (!reply.raw.headersSent) {
+        reply.raw.writeHead(500, { 'content-type': 'application/json' });
+        reply.raw.end(
+          JSON.stringify({
+            jsonrpc: '2.0',
+            id: null,
+            error: { code: -32603, message: 'Internal error' },
+          }),
+        );
+      } else {
+        reply.raw.end();
+      }
+    }
   });
 
   return app;
@@ -53,6 +70,21 @@ async function start(): Promise<void> {
     process.exit(1);
   }
   const app = buildApp(config);
+
+  // Graceful shutdown — DO App Platform sends SIGTERM on deploy/scale.
+  const shutdown = async (signal: string): Promise<void> => {
+    app.log.info({ signal }, 'shutting down');
+    try {
+      await app.close();
+      process.exit(0);
+    } catch (err) {
+      app.log.error({ err }, 'error during shutdown');
+      process.exit(1);
+    }
+  };
+  process.on('SIGTERM', () => void shutdown('SIGTERM'));
+  process.on('SIGINT', () => void shutdown('SIGINT'));
+
   try {
     await app.listen({ port: config.port, host: '0.0.0.0' });
   } catch (err) {

@@ -13,8 +13,10 @@ consumers (xcale-backend first) consume capabilities over stable, consumer-agnos
 
 - TypeScript (strict; `exactOptionalPropertyTypes` off — see `docs/adr/typescript-strictness-config.md`),
   Node ≥20, ESM.
-- Fastify 4 · `@modelcontextprotocol/sdk` (MCP, confined to `src/protocol/`) · zod · pino · Vitest.
+- Fastify 5 · `@modelcontextprotocol/sdk` (MCP, confined to `src/protocol/`) · zod · pino · Vitest.
 - Run via **tsx** (no build step yet — *complexity on demand*).
+- Quality gates: Prettier (format), `tsc --noEmit`, Vitest, `npm audit` — all enforced in CI
+  (`.github/workflows/ci.yml`) on every PR to `dev`/`main`.
 
 ## Scripts
 

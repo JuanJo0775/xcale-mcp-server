@@ -12,19 +12,25 @@
     "start": "tsx src/server.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "format": "prettier --write \"src/**/*.ts\" vitest.config.ts",
+    "format:check": "prettier --check \"src/**/*.ts\" vitest.config.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
-    "fastify": "^4.28.1",
+    "fastify": "^5.8.5",
     "pino": "^9.5.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
     "pino-pretty": "^11.3.0",
+    "prettier": "^3.8.4",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
-    "vitest": "^2.1.9"
+    "vitest": "^3.2.6"
+  },
+  "overrides": {
+    "esbuild": "^0.25.0"
   }
 }

@@ -33,7 +33,10 @@ export async function runProviderConformance(provider: IProvider): Promise<void>
   const prefix = `mcp_${m.slug}_`;
   const seen = new Set<string>();
   for (const tool of tools) {
-    expect(tool.name.startsWith(prefix), `tool "${tool.name}" must be namespaced "${prefix}*"`).toBe(true);
+    expect(
+      tool.name.startsWith(prefix),
+      `tool "${tool.name}" must be namespaced "${prefix}*"`,
+    ).toBe(true);
     expect(seen.has(tool.name), `duplicate tool name "${tool.name}"`).toBe(false);
     seen.add(tool.name);
     expect(typeof tool.description, `${tool.name}.description`).toBe('string');
@@ -41,7 +44,11 @@ export async function runProviderConformance(provider: IProvider): Promise<void>
   }
 
   // An unknown tool must yield a typed UNKNOWN_TOOL error, never throw.
-  const result = await provider.callTool('___does_not_exist___', {}, { token: new SecretString('') });
+  const result = await provider.callTool(
+    '___does_not_exist___',
+    {},
+    { token: new SecretString('') },
+  );
   expect(result.kind, 'unknown tool → error result').toBe('error');
   if (result.kind === 'error') {
     expect(result.code).toBe(ProviderErrorCode.UNKNOWN_TOOL);
