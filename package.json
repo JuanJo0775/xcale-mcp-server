@@ -1,0 +1,30 @@
+{
+  "name": "xcale-mcp-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "xcale's own MCP integration platform (a 'Composio LATAM'). Provider knowledge lives here; consumers consume capabilities over stable, consumer-agnostic MCP contracts.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "doppler run -- tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "fastify": "^4.28.1",
+    "pino": "^9.5.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "pino-pretty": "^11.3.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.9"
+  }
+}

@@ -1,0 +1,46 @@
+# xcale-mcp-server — Project facts
+
+xcale's own MCP integration platform (a "Composio LATAM"). Provider knowledge lives here;
+consumers (xcale-backend first) consume capabilities over stable, consumer-agnostic MCP contracts.
+
+- **Identity & philosophy** — `.claude/rules/soul.md` (always loaded).
+- **Glossary** — `CONTEXT.md` (use its canonical terms in code, docs, commits).
+- **Vision** — `docs/foundation.md`. **Target architecture & rationale** — `docs/architecture-review.md`.
+- **Decisions** — `docs/adr/` (index + policy: `docs/adr/README.md`).
+- **Onboarding / add a provider** — `docs/onboarding.md` + the `add-provider` skill.
+
+## Stack
+
+- TypeScript (strict; `exactOptionalPropertyTypes` off — see `docs/adr/typescript-strictness-config.md`),
+  Node ≥20, ESM.
+- Fastify 4 · `@modelcontextprotocol/sdk` (MCP, confined to `src/protocol/`) · zod · pino · Vitest.
+- Run via **tsx** (no build step yet — *complexity on demand*).
+
+## Scripts
+
+- `npm run dev` — `doppler run -- tsx watch src/server.ts` (local; pulls secrets from Doppler).
+- `npm start` — `tsx src/server.ts` (env provided by the platform).
+- `npm run typecheck` — `tsc --noEmit`. `npm test` / `npm run test:watch` — Vitest.
+
+## Secrets & config (Doppler)
+
+- **Doppler project:** `xcale-mcp-server` · configs `dev` / `stg` / `prd` (pointer: `doppler.yaml`).
+- `MCP_SERVER_SECRET` — Hop-B shared secret (backend → server auth). Never commit secrets.
+- `PORT`, `NODE_ENV`, `LOG_LEVEL` — runtime config. Shape documented in `.env.example`.
+
+## Architecture invariants (enforced by review + PR template)
+
+- **Provider Self-Containment** — adding a provider touches only `src/providers/{slug}/` (+ one
+  line in `src/providers/index.ts`) and generic config; never `src/core|protocol|auth` or a consumer.
+- **Consumer-Agnostic** — no consumer concepts (tenant/plan/xcale entities) on the wire.
+- **Credential-in-Transit-Only** — tokens via `SecretString`; `.reveal()` only at provider egress;
+  never persisted/logged.
+
+## Git workflow
+
+- `main` (default, protected: PR + 1 review) · `dev` (protected: PR). Implementation: feature
+  branch → PR → `dev`; release: `dev` → `main` PR. Repo: https://github.com/JuanJo0775/xcale-mcp-server
+
+## Deploy (planned)
+
+- DigitalOcean App Platform; Doppler for secret injection. Health: `GET /health`.
