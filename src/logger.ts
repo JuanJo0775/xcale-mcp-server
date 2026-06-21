@@ -6,11 +6,7 @@ export function loggerOptions(level: string) {
   return {
     level,
     redact: {
-      paths: [
-        'req.headers["x-provider-token"]',
-        'req.headers.authorization',
-        'req.headers.cookie',
-      ],
+      paths: ['req.headers["x-provider-token"]', 'req.headers.authorization', 'req.headers.cookie'],
       censor: '[REDACTED]',
     },
   };

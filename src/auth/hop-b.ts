@@ -5,7 +5,10 @@ import { timingSafeEqual } from 'node:crypto';
  * Shared-secret Bearer, compared in constant time (ADR: credential-forwarding-and-token-model).
  * This is distinct from Hop A (the provider token) and is checked in exactly one place.
  */
-export function verifyHopB(authorizationHeader: string | undefined, expectedSecret: string): boolean {
+export function verifyHopB(
+  authorizationHeader: string | undefined,
+  expectedSecret: string,
+): boolean {
   if (expectedSecret.length === 0 || authorizationHeader === undefined) {
     return false;
   }

@@ -38,7 +38,11 @@ describe('echo provider', () => {
   });
 
   it('auth_check maps a missing credential to AUTH_EXPIRED (reconnect signal)', async () => {
-    const result = await echoProvider.callTool(TOOL_AUTH_CHECK, {}, { token: new SecretString('') });
+    const result = await echoProvider.callTool(
+      TOOL_AUTH_CHECK,
+      {},
+      { token: new SecretString('') },
+    );
     expect(result.kind).toBe('error');
     if (result.kind === 'error') {
       expect(result.code).toBe(ProviderErrorCode.AUTH_EXPIRED);

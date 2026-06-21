@@ -6,9 +6,16 @@ import { toolSuccess } from '../types';
 
 function fakeProvider(slug: string, toolNames: readonly string[]): IProvider {
   return {
-    manifest: { slug, displayName: slug, category: 'test', schemaVersion: '1', providerVersion: '0.1.0' },
+    manifest: {
+      slug,
+      displayName: slug,
+      category: 'test',
+      schemaVersion: '1',
+      providerVersion: '0.1.0',
+    },
     auth: { type: 'api_key', fields: [{ key: 'k', label: 'K', placement: 'header' }] },
-    listTools: () => toolNames.map((name) => ({ name, description: name, inputSchema: { type: 'object' } })),
+    listTools: () =>
+      toolNames.map((name) => ({ name, description: name, inputSchema: { type: 'object' } })),
     callTool: async (toolName) => toolSuccess({ toolName, providerSlug: slug, data: null }),
   };
 }
@@ -30,8 +37,8 @@ describe('createRegistry', () => {
   });
 
   it('rejects duplicate tool names across providers', () => {
-    expect(() =>
-      createRegistry([fakeProvider('a', ['dup']), fakeProvider('b', ['dup'])]),
-    ).toThrow(/Duplicate tool name/);
+    expect(() => createRegistry([fakeProvider('a', ['dup']), fakeProvider('b', ['dup'])])).toThrow(
+      /Duplicate tool name/,
+    );
   });
 });

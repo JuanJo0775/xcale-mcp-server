@@ -34,7 +34,9 @@ describe('HTTP surface', () => {
       headers: { authorization: `Bearer ${SECRET}` },
     });
     expect(res.statusCode).toBe(200);
-    const body = res.json() as { providers: Array<{ slug: string; authDescriptor: { type: string } }> };
+    const body = res.json() as {
+      providers: Array<{ slug: string; authDescriptor: { type: string } }>;
+    };
     const echo = body.providers.find((p) => p.slug === 'echo');
     expect(echo).toBeDefined();
     expect(echo?.authDescriptor.type).toBe('api_key');
