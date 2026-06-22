@@ -64,10 +64,11 @@ export const {SLUG}_TOOLS = [
     input: z.object({ id: z.string() }).strict(),       // single source of truth
     handler: async (args, ctx) => {                       // args + ctx.metadata are TYPED + validated
       const res = await requestJson(`${BASE}/thing/${args.id}`, { token: ctx.token /* egress only */ });
-      return res.ok ? ok(res.data) : err(res.errorCode, `…${res.body}`); // never echo secrets
+      // Error messages use status/code only — NEVER interpolate res.body (it may carry provider data).
+      return res.ok ? ok(res.data) : err(res.errorCode, `provider error (HTTP ${res.status})`);
     },
   }),
-  // list tools: merge `paginationInput` into input and return `buildPage(items, page, pageSize, meta)`
+  // list tools: use `definePaginatedList` (merges page/pageSize; returns the uniform PaginatedResult)
 ];
 
 export function create{Slug}Provider(): IProvider {
