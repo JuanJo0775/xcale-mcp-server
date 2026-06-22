@@ -30,6 +30,25 @@ describe('cloudbeds provider', () => {
     expect(provider.contextSchema).toMatchObject({ type: 'object' });
   });
 
+  it('translates the uniform page/pageSize contract to Cloudbeds param names + sends propertyID', async () => {
+    let calledUrl = '';
+    const capturingFetch = (async (url: string | URL) => {
+      calledUrl = url.toString();
+      return new Response(JSON.stringify(reservations), { status: 200 });
+    }) as FetchLike;
+    const provider = createCloudbedsProvider({ fetchImpl: capturingFetch });
+    await provider.callTool(
+      'mcp_cloudbeds_list_reservations',
+      { page: 2, pageSize: 10 },
+      ctx({ propertyID: 'PROP1' }),
+    );
+    const qs = new URL(calledUrl).searchParams;
+    expect(qs.get('propertyID')).toBe('PROP1');
+    expect(qs.get('pageNumber')).toBe('2');
+    expect(qs.get('resultsPerPage')).toBe('10');
+    expect(qs.get('pageSize')).toBeNull(); // not Cloudbeds' name
+  });
+
   it('list_reservations returns a uniform PaginatedResult (items kept verbatim)', async () => {
     const provider = createCloudbedsProvider({
       fetchImpl: fakeFetch({ getReservations: { body: reservations } }),

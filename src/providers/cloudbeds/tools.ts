@@ -37,8 +37,9 @@ function unwrap(res: RequestResult, method: string): Unwrapped {
 
 /**
  * The curated, read-first toolset. `propertyID` comes from the validated `ctx.metadata`
- * (Explicit Context); the consumer (Rail A) forwards it. Pagination params for Cloudbeds
- * (`pageNumber`/`pageSize`) are sent for the list tool; confirm exact names against live docs.
+ * (Explicit Context); the consumer (Rail A) forwards it. The uniform `page`/`pageSize` contract is
+ * translated to Cloudbeds' own param names (`pageNumber`/`resultsPerPage`) here — that translation
+ * is exactly the adapter's job. (Verify the exact names once against a live sandbox.)
  */
 export function buildCloudbedsTools(
   client: CloudbedsClient,
@@ -60,7 +61,7 @@ export function buildCloudbedsTools(
         const res = await client.get('getReservations', ctx.token, {
           propertyID,
           pageNumber: args.page,
-          pageSize: args.pageSize,
+          resultsPerPage: args.pageSize, // Cloudbeds' param name for page size
           status: args.status,
           checkInFrom: args.checkInFrom,
           checkInTo: args.checkInTo,
