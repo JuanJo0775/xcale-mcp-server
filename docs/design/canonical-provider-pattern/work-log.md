@@ -51,7 +51,8 @@ CI guard active. PR A must NOT contain any Cloudbeds code (that is PR B).
   the generic dispatcher (validate metadata → validate args → typed handler → wrap to `ToolResult`;
   `UNKNOWN_TOOL`/`INVALID_INPUT`). Generates `inputSchema` per tool and publishes `contextSchema`.
 - **`src/core/pagination.ts`** — `PaginatedResult<T>`, `paginationInput` (defaults + `MAX_PAGE_SIZE`),
-  `buildPage()` (derives `hasMore` only when determinable).
+  `buildPage()` (derives `hasMore` only when determinable), and **`definePaginatedList`** (merges
+  pagination into a tool's input + wraps items into the uniform envelope).
 - **`src/core/http.ts`** — `mapHttpStatusToErrorCode()` + `requestJson()` (timeout, token-at-egress
   never logged, typed error result, injectable `fetchImpl`).
 - **`src/core/json-schema.ts`** — `toJsonSchema(zod)`.
@@ -78,9 +79,10 @@ CI guard active. PR A must NOT contain any Cloudbeds code (that is PR B).
 
 ### Open / deferred (to refine before / during PR B)
 
-- **`definePaginatedList` wrapper — DEFERRED to PR B.** PR A ships the primitives
-  (`paginationInput` + `buildPage` + `PaginatedResult`); the ergonomic wrapper is best designed
-  against Cloudbeds' real list tools (`list_reservations`) rather than guessed now.
+- **`definePaginatedList` — DONE in PR A (correction).** Initially deferred to PR B, but it is a
+  **core** helper: building it in PR B would make the provider PR touch `src/core/**` and break the
+  §10 demonstration (a provider PR touches only `src/providers/**`). So it belongs in this platform
+  PR. PR B will be its first real consumer (Cloudbeds `list_reservations`) and may refine ergonomics.
 - **Non-bearer token application in `requestJson`** — not built (no provider needs it yet).
 - **`outputSchema` publishing** — reserved (additive), not implemented.
 - **`add-provider` template + architecture-review** — updated to teach the helpers in this PR;
@@ -90,5 +92,6 @@ CI guard active. PR A must NOT contain any Cloudbeds code (that is PR B).
 
 ### Refinement questions for review (before PR B)
 
-- Build `definePaginatedList` in PR B alongside the first real list tool? (recommended: yes)
+- ~~Build `definePaginatedList` in PR B?~~ **Resolved:** built in PR A (it is a core helper; keeping
+  it out of the provider PR preserves the §10 demonstration).
 - Keep `requestJson` bearer-only until a non-OAuth provider appears? (recommended: yes)
