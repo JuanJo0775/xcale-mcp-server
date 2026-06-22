@@ -16,6 +16,12 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - name: Guard — providers must not hand-write inputSchema (single source of truth)
+        run: |
+          if grep -rn "inputSchema" src/providers; then
+            echo "::error::Providers must declare tools via defineTool (zod). Hand-written inputSchema is forbidden (ADR: canonical-provider-pattern)."
+            exit 1
+          fi
       - name: Format check
         run: npm run format:check
       - name: Type check

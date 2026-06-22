@@ -1,4 +1,4 @@
-import type { McpToolDefinition, ProviderCallContext, ToolResult } from './types';
+import type { JsonSchema, McpToolDefinition, ProviderCallContext, ToolResult } from './types';
 
 /**
  * Non-secret auth blueprint a provider publishes via the catalog (ADR:
@@ -58,6 +58,12 @@ export interface ProviderManifest {
 export interface IProvider {
   readonly manifest: ProviderManifest;
   readonly auth: ProviderAuthDescriptor;
+  /**
+   * JSON Schema of the provider's required call context (generated from its `metadataSchema`),
+   * published via the catalog so a consumer knows what context to forward (e.g. `propertyID`).
+   * Absent when the provider needs no context (Explicit Context principle).
+   */
+  readonly contextSchema?: JsonSchema;
   listTools(): readonly McpToolDefinition[];
   callTool(
     toolName: string,
