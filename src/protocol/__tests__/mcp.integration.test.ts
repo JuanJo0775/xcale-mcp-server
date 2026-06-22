@@ -39,6 +39,8 @@ describe('MCP protocol (e2e over Streamable HTTP, stateless)', () => {
     const names = tools.map((t) => t.name);
     expect(names).toContain('mcp_echo_say');
     expect(names).toContain('mcp_echo_auth_check');
+    // a real provider's tools are exposed through the protocol too (not just the registry)
+    expect(names).toContain('mcp_cloudbeds_list_reservations');
     await client.close();
   });
 

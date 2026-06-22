@@ -73,8 +73,10 @@ pattern works: the second real provider was a thin, isolated adapter.
 
 ### Open / to confirm before go-live
 
-- **Exact OAuth scope strings + pagination param names** (`pageNumber`/`pageSize` vs
-  `resultsPerPage`) against live Cloudbeds docs (tests mock the transport, so they're isolated).
+- **OAuth scope strings + per-endpoint param names** — pagination is now mapped to Cloudbeds'
+  `pageNumber`/`resultsPerPage` (fixed in `fix/cloudbeds-review`; a test asserts the translation).
+  Exact scope strings + the single-get params (`reservationID`, `guestID`, availability dates) still
+  to verify against a live sandbox.
 - **Sandbox smoke test** (opt-in, env-gated, outside CI) — add when a Cloudbeds sandbox
   property/token is available.
 - **R-1**: confirmed **standard-risk** for read-first; reevaluate the credential model before any
@@ -82,3 +84,20 @@ pattern works: the second real provider was a thin, isolated adapter.
 - **Consumer side (separate PRs/repos):** backend MCP client runtime (Rail E KD-1) + Rail A generic
   OAuth from the discovered descriptor + frontend connect/usage. The acceptance gate stands: the full
   OAuth lifecycle must work with **zero Cloudbeds-specific code in xcale-backend**.
+
+## Post-merge review (`fix/cloudbeds-review`)
+
+An exhaustive review before consuming Cloudbeds from the backend/frontend:
+
+- **Static:** `tsc` clean · 53 tests · `format:check` · CI guard · `npm audit` 0.
+- **Live smoke:** the server boots; `GET /health` → ok; `GET /discover` requires Hop-B (401 without)
+  and lists `cloudbeds` with `oauth2` + `supportsRefresh` + `toolCount: 6` + `contextSchema:[propertyID]`.
+  The MCP `tools/list` exposes `mcp_cloudbeds_*` through the protocol (integration test asserts it).
+- **Findings fixed:** (1) **pagination param** — was sending `pageSize`; Cloudbeds expects
+  `resultsPerPage` → fixed + a test now captures the request URL and asserts
+  `pageNumber`/`resultsPerPage`/`propertyID`. (2) **`add-provider` template** error-message example
+  interpolated `res.body` (could echo provider data) → changed to status/code only. (3) Added the
+  protocol-level `tools/list` assertion for a Cloudbeds tool.
+- **No tech debt carried:** the one contained `any` (heterogeneous tool collection) is documented;
+  `exactOptionalPropertyTypes` off is a tracked ADR; bearer-only `requestJson` and the
+  `definePaginatedList` ergonomics are explicit, reviewed choices — not loose ends.
