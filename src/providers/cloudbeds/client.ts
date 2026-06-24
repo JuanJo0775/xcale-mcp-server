@@ -2,7 +2,7 @@ import type { FetchLike, RequestResult } from '../../core/http';
 import { requestJson } from '../../core/http';
 import type { SecretString } from '../../core/secret-string';
 
-const DEFAULT_BASE_URL = 'https://hotels.cloudbeds.com/api/v1.2';
+const DEFAULT_BASE_URL = 'https://hotels.cloudbeds.com/api/v1.3';
 
 export interface CloudbedsClientDeps {
   /** Injectable transport for deterministic tests (default: global fetch). */
@@ -16,7 +16,7 @@ export interface CloudbedsClient {
   get(method: string, token: SecretString, params: QueryParams): Promise<RequestResult>;
 }
 
-/** Thin Cloudbeds API v1.2 client. Provider-specific request shaping lives here, not in core. */
+/** Thin Cloudbeds API v1.3 client. Provider-specific request shaping lives here, not in core. */
 export function createCloudbedsClient(deps: CloudbedsClientDeps = {}): CloudbedsClient {
   const baseUrl = deps.baseUrl ?? DEFAULT_BASE_URL;
   return {
