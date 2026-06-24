@@ -1,7 +1,7 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 
 import { verifyHopB } from './auth/hop-b';
-import { extractProviderToken } from './auth/token';
+import { extractProviderMetadata, extractProviderToken } from './auth/token';
 import { type Config, loadConfig } from './config';
 import { buildCatalog } from './core/catalog';
 import { createRegistry } from './core/registry';
@@ -34,10 +34,12 @@ export function buildApp(config: Config = loadConfig()): FastifyInstance {
     reply.hijack();
     const rawToken = request.headers['x-provider-token'];
     const token = extractProviderToken(typeof rawToken === 'string' ? rawToken : undefined);
+    const rawMeta = request.headers['x-provider-metadata'];
+    const metadata = extractProviderMetadata(typeof rawMeta === 'string' ? rawMeta : undefined);
     try {
       await handleMcpRequest({
         registry,
-        ctx: { token },
+        ctx: { token, metadata },
         req: request.raw,
         res: reply.raw,
         body: request.body,
