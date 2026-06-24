@@ -7,7 +7,7 @@
 >
 > **Acceptance gate (the pilot's whole point):** the full OAuth lifecycle —
 > discover → connect → refresh → execute → error-handling → reconnect — must work with **zero
-> Cloudbeds-specific code in xcale-backend**. The backend builds a *generic, discovery-driven* MCP
+> Cloudbeds-specific code in xcale-backend**. The backend builds a _generic, discovery-driven_ MCP
 > consumer once; it is reused by every future provider.
 
 ---
@@ -22,7 +22,7 @@ The backend must be able to call the mcp-server over the three pillars + Hop-B.
 - **Deployed:** deploy the mcp-server to DO App Platform (Dockerfile/`app.yaml` like the backend),
   inject Doppler `xcale-mcp-server/prd`; `mcpServerUrl` → the service URL.
 - **Shared secret (Hop B):** `MCP_SERVER_SECRET` must be the **same value** in the mcp-server's
-  Doppler *and* the backend's Doppler. (It already exists in `xcale-mcp-server` dev/prd.)
+  Doppler _and_ the backend's Doppler. (It already exists in `xcale-mcp-server` dev/prd.)
 
 ---
 
@@ -38,7 +38,12 @@ The backend must be able to call the mcp-server over the three pillars + Hop-B.
    - Build a proxy `IToolExecutor` per discovered tool (the same adapter trick the Composio loader
      uses), namespaced `mcp_{slug}_{verb}`.
    - On execute: `tools/call` forwarding the **decrypted Rail A token** as `X-Provider-Token` and the
-     routing context (`propertyID`) — read the required context from the catalog `contextSchema`.
+     routing context as the **`X-Provider-Metadata`** header — an opaque JSON object (base64-encoded
+     is header-safe), e.g. `{ "propertyID": "<accountKey>" }`. The backend forwards the connection's
+     `metadata` bag (populated at connect time) as-is; the catalog `contextSchema` documents the keys
+     the provider requires, and the server's `metadataSchema` validates them. (Wire mechanism added
+     server-side in `extractProviderMetadata`; absent/malformed metadata → `PROVIDER_INVALID_INPUT`
+     before any provider call.)
    - Map the result into `StandardToolResult`; map `structuredContent.code === 'PROVIDER_AUTH_EXPIRED'`
      → `markConnectionAuthFailure()` + `reconnectRequiredResult()`.
 2. **Rail A as a generic OAuth executor** — drive OAuth from the **discovered `authDescriptor`**
