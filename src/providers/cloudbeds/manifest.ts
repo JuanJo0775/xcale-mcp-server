@@ -8,5 +8,6 @@ export const cloudbedsManifest: ProviderManifest = {
   category: 'hospitality',
   schemaVersion: '2026-06-21',
   providerVersion: '0.1.0',
+  logoUrl: '/assets/cloudbeds.svg',
   capabilities: { pagination: true },
 };

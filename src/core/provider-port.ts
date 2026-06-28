@@ -44,6 +44,8 @@ export interface ProviderManifest {
   readonly schemaVersion: string;
   /** The adapter's own semver. */
   readonly providerVersion: string;
+  /** Relative or absolute URL to the provider's logo image (SVG/PNG). */
+  readonly logoUrl?: string;
   /** Reserved lifecycle (modeled now, not enforced in v1). */
   readonly apiVersion?: string;
   readonly deprecated?: boolean;
