@@ -17,10 +17,7 @@ const ASSETS_DIR = resolve(__dirname, '..', 'assets');
 
 const LOGO_CACHE = new Map<string, { data: Buffer; type: string }>();
 
-async function serveAsset(
-  reply: import('fastify').FastifyReply,
-  filename: string,
-): Promise<void> {
+async function serveAsset(reply: import('fastify').FastifyReply, filename: string): Promise<void> {
   const cached = LOGO_CACHE.get(filename);
   if (cached) {
     await reply.header('content-type', cached.type).send(cached.data);
